@@ -1,4 +1,6 @@
-import {useState} from 'react'
+import {atomFamily, useRecoilState} from 'recoil'
+import {selectedElementState} from '../../Canvas'
+import {Drag} from '../Drag'
 import {RectangleContainer} from './RectangleContainer'
 import {RectangleInner} from './RectangleInner'
 
@@ -7,23 +9,43 @@ export type ElementStyle = {
     size: {width: number; height: number}
 }
 
-export const Rectangle = () => {
-    const [element] = useState({
+export type Element = {style: ElementStyle}
+
+const elementState = atomFamily({
+    key: 'element',
+    default: {
         style: {
-            position: {top: 100, left: 100},
-            size: {width: 100, height: 100},
+            position: {top: 0, left: 0},
+            size: {width: 50, height: 50},
         },
-    })
+    },
+})
+
+export const Rectangle = ({id}: {id: number}) => {
+    const [selectedElement, setSelectedElement] = useRecoilState(selectedElementState)
+    const [element, setElement] = useRecoilState(elementState(id))
 
     return (
-        <RectangleContainer
+        <Drag
             position={element.style.position}
-            size={element.style.size}
-            onSelect={() => {
-                console.log("I've been selected!")
+            onDrag={(position) => {
+                setElement({
+                    style: {
+                        ...element.style,
+                        position,
+                    },
+                })
             }}
         >
-            <RectangleInner selected={false} />
-        </RectangleContainer>
+            <div>
+                <RectangleContainer
+                    position={element.style.position}
+                    size={element.style.size}
+                    onSelect={() => setSelectedElement(id)}
+                >
+                    <RectangleInner selected={id === selectedElement} />
+                </RectangleContainer>
+            </div>
+        </Drag>
     )
 }
