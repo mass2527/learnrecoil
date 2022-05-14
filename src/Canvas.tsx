@@ -1,5 +1,6 @@
 import {atom, useRecoilValue, useSetRecoilState} from 'recoil'
 import {Element, Rectangle} from './components/Rectangle/Rectangle'
+import {EditProperties} from './EditProperties'
 import {PageContainer} from './PageContainer'
 import {Toolbar} from './Toolbar'
 
@@ -22,6 +23,7 @@ function Canvas() {
     return (
         <PageContainer onClick={() => setSelectedElement(null)}>
             <Toolbar />
+            <EditProperties />
             {elements.map((id) => (
                 <Rectangle key={id} id={id} />
             ))}
